@@ -9,12 +9,6 @@ import sys
 
 import time
 
-def format_value(sensor, datatype, formatter):
-        if not sensor.has_value(datatype):
-            return ("", None)
-        value = sensor.value(datatype)
-        return (formatter(value.value), value.timestamp)
-
 tdCore = td.TelldusCore()
 
 try:
@@ -23,9 +17,9 @@ try:
     cur = con.cursor()
 
     for sensor in tdCore.sensors():
-	value = format_value(sensor, const.TELLSTICK_TEMPERATURE, lambda x: "{}".format(x))
-	print "{} at {}".format(value[0], time.ctime(value[1]))
-        cur.execute("INSERT INTO temperature VALUES (FROM_UNIXTIME(%s), %s, %s);", (value[1], sensor.id, value[0]))
+	value = sensor.value(const.TELLSTICK_TEMPERATURE)
+	print "{} at {}".format(value.value, time.ctime(value.timestamp))
+        cur.execute("INSERT INTO temperature VALUES (FROM_UNIXTIME(%s), %s, %s);", (value.timestamp, sensor.id, value.value))
 
     con.commit()
     
