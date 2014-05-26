@@ -21,7 +21,7 @@ try:
     cur = con.cursor()
 
     for sensor in tdCore.sensors():
-	value = format_value(sensor, const.TELLSTICK_TEMPERATURE, lambda x: x)
+	value = format_value(sensor, const.TELLSTICK_TEMPERATURE, lambda x: "{}".format(x))
 	print value
         cur.execute("INSERT INTO temperature VALUES (NOW(), %s, %s);", (sensor.id, value))
 
