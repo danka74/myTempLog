@@ -7,6 +7,12 @@ import tellcore.constants as const
 import MySQLdb as mdb
 import sys
 
+def format_value(sensor, datatype, formatter):
+        if not sensor.has_value(datatype):
+            return ("", None)
+        value = sensor.value(datatype)
+        return (formatter(value.value), value.timestamp)
+
 tdCore = td.TelldusCore()
 
 try:
@@ -15,7 +21,7 @@ try:
     cur = con.cursor()
 
     for sensor in tdCore.sensors():
-	value = sensor.value(const.TELLSTICK_TEMPERATURE)
+	value = format_value(sensor, const.TELLSTICK_TEMPERATURE, lambda x: x)
 	print value
         cur.execute("INSERT INTO temperature VALUES (NOW(), %s, %s);", (sensor.id, value))
 
