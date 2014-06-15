@@ -18,30 +18,28 @@ while True:
 	sensors = core.sensors()
 	
 	try:
-	    con = mdb.connect('192.168.1.100', 'tempuser', 'App3lKnyckar1azz', 'tempdb');
+		con = mdb.connect('192.168.1.100', 'tempuser', 'App3lKnyckar1azz', 'tempdb');
 	
-	    cur = con.cursor()
+		cur = con.cursor()
 	
-	    for sensor in sensors:
-		value = sensor.value(const.TELLSTICK_TEMPERATURE)
-		#print "{} at {}".format(value.value, time.ctime(value.timestamp))
-		if abs(float(value.value) - prev_values.get(sensor.id, impossible_value)) >= 0.5:
-                        #print "stored!"
-	        	cur.execute("INSERT INTO temperature VALUES (FROM_UNIXTIME(%s), %s, %s);", (value.timestamp, sensor.id, value.value))
-	        	prev_values[sensor.id] = float(value.value)
+		for sensor in sensors:
+			value = sensor.value(const.TELLSTICK_TEMPERATURE)
+			# print "{} at {}".format(value.value, time.ctime(value.timestamp))
+			if abs(float(value.value) - prev_values.get(sensor.id, impossible_value)) >= 0.5:
+				# print "stored!"
+				cur.execute("INSERT INTO temperature VALUES (FROM_UNIXTIME(%s), %s, %s);", (value.timestamp, sensor.id, value.value))
+				prev_values[sensor.id] = float(value.value)
 	
-	    con.commit()
+		con.commit()
 
 	except mdb.Error, e:
 	
-	    con.rollback()
-	  
-	    print "Error %d: %s" % (e.args[0],e.args[1])
-	    sys.exit(1)
-	    
+		con.rollback()
+		print "Error %d: %s" % (e.args[0], e.args[1])
+		sys.exit(1)
+		
 	finally:    
-	        
-	    if con:    
-	        con.close()
+		if con:
+			con.close()
 
 	time.sleep(60)
