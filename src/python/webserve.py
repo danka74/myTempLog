@@ -21,6 +21,12 @@ app.install(plugin)
 def index(name):
     return template('<b>Hello {{name}}</b>!', name=name)
 
+@app.route('/sensors')
+def sensors( db):
+    db.execute('SELECT DISTINCT id FROM temperature;')
+    rows = db.fetchall()
+    return template('sensors', rows=rows)
+    
 @app.route('/now/<sensorid>')
 def now(sensorid, db):
     db.execute('SELECT * FROM temperature WHERE id={} ORDER BY timestamp DESC LIMIT 1;'.format(sensorid))
