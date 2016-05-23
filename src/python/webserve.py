@@ -1,4 +1,4 @@
-#!/usr/bin/python3
+#!/usr/bin/python
 '''
 Created on May 29, 2014
 
@@ -47,7 +47,7 @@ def last24(sensorid, db):
 
 @app.route('/last24svg/<sensorid>')
 def last24svg(sensorid, db):
-    rows = db.execute('SELECT ts, value FROM temperature WHERE id=? AND datetime(ts) > datetime("now", "-1 day")', (sensorid,))
+    rows = db.execute('SELECT ts, value FROM temperature WHERE id=? AND datetime(ts, "unixepoch") > datetime("now", "-1 day")', (sensorid,))
     if not rows:
         return HTTPError(404, "Page not found")
     response.content_type = 'image/svg+xml'
@@ -57,7 +57,7 @@ def last24svg(sensorid, db):
         data.append((datetime.datetime.fromtimestamp(row[0]), row[1]))
                     
 
-    print data
+    #print data
 
     dia = pygal.DateY(x_label_rotation=20, style=LightSolarizedStyle)
     dia.x_label_format = "%a %H:%M"
