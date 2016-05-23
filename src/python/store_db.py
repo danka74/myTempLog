@@ -4,7 +4,7 @@
 import tellcore.telldus as td
 import tellcore.constants as const
 
-import MySQLdb as mdb
+import sqlite3
 import sys
 
 import time
@@ -18,21 +18,21 @@ while True:
 	sensors = core.sensors()
 	
 	try:
-		con = mdb.connect('192.168.1.100', 'tempuser', 'App3lKnyckar1azz', 'tempdb');
+		con = sqlite3.connect('temperature.db');
 	
 		cur = con.cursor()
 	
 		for sensor in sensors:
 			value = sensor.value(const.TELLSTICK_TEMPERATURE)
-			# print "{} at {}".format(value.value, time.ctime(value.timestamp))
+			print "{} at {}".format(value.value, time.ctime(value.timestamp))
 			if abs(float(value.value) - prev_values.get(sensor.id, impossible_value)) >= 0.5:
-				# print "stored!"
-				cur.execute("INSERT INTO temperature VALUES (FROM_UNIXTIME(%s), %s, %s);", (value.timestamp, sensor.id, value.value))
+				print "stored!"
+				cur.execute("INSERT INTO temperature VALUES (?, ?, ?);", (value.timestamp, sensor.id, value.value))
 				prev_values[sensor.id] = float(value.value)
 	
 		con.commit()
 
-	except mdb.Error, e:
+	except sqlite3.Error, e:
 	
 		con.rollback()
 		print "Error %d: %s" % (e.args[0], e.args[1])

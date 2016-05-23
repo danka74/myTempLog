@@ -6,7 +6,7 @@
 <body>
 <table>
 % for row in rows:
-<tr><td>{{row['id']}}</td></tr>
+<tr><td><a href="/last24svg/{{row['id']}}">{{row['id']}}</a></td></tr>
 % end
 </table>
 </body>
